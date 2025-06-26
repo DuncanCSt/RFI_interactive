@@ -9,7 +9,7 @@ from st_aggrid import (
 
 
 def editable_transitions_table(df: pd.DataFrame) -> dict:
-    """Display an editable AG Grid table for df and return the grid response dict."""
+    """Return a grid widget whose edits and row selections trigger a rerun."""
     row_style = JsCode(
         """
 function(params) {
@@ -42,7 +42,11 @@ function(params) {
     grid_response = AgGrid(
         df,
         gridOptions=grid_options,
-        update_mode=GridUpdateMode.VALUE_CHANGED,
+        # Trigger a rerun whenever either a cell edit or a row selection
+        # modifies the underlying grid model.  ``MODEL_CHANGED`` captures
+        # both VALUE_CHANGED and SELECTION_CHANGED events so the app reacts
+        # immediately to row selections.
+        update_mode=GridUpdateMode.MODEL_CHANGED,
         data_return_mode=DataReturnMode.FILTERED_AND_SORTED,
         allow_unsafe_jscode=True,
     )
