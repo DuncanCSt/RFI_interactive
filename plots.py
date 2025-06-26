@@ -13,6 +13,8 @@ def plot_summary_with_transitions(
     """
     fig, ax = plt.subplots()
     ax.plot(summary_df['frequency'], summary_df['mean'], alpha=0.5, label='Mean')
+    ax.plot(summary_df['frequency'], summary_df['baseline'],
+            alpha=0.5, label='Baseline', c='black')
     plt.fill_between(
         summary_df['frequency'],
         summary_df['mean'] - summary_df['std'],

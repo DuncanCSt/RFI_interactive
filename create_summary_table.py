@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import sqlite3
+from kernel_functions import kernel_regression
 from queries import load_data  # Assuming load_data is defined in queries.py
 
 def create_summary_table(df: pd.DataFrame = None):
@@ -23,9 +24,18 @@ def create_summary_table(df: pd.DataFrame = None):
     # geometric std (multiplicative): exp(std(log(x))) ignoring non‐positive
     std  = np.nanstd(data_slice, axis=1)
 
+    min_cutoff = np.percentile(mean, 1)
+    max_cutoff = np.percentile(mean, 90)
+
+    X_train = np.arange(0, len(mean))
+    y_train = np.clip(mean, min_cutoff, max_cutoff)
+    x_predictions = X_train
+    baseline = np.array([kernel_regression(X_train, y_train, X, h=5, num_neighbors=10) for X in x_predictions])
+
     # create summary table
     summary_df = pd.DataFrame({
         'frequency': df['frequency'],
+        'baseline': baseline,
         'mean': mean,
         'std': std,
         'trace_1': data_slice[:, 0],

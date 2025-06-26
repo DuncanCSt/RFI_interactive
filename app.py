@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import io
 
 from create_db import create_database
 from create_summary_table import create_summary_table
@@ -63,4 +64,25 @@ save_transitions_data(transitions_df)
 
 # Plot results using the custom x_range if available
 fig, _ = plot_summary_with_transitions(summary_df, edited_df, x_range=x_range)
+
+# Only generate the PNG if the user clicks the "Prepare PNG" button.
+if "png_buffer" not in st.session_state:
+    st.session_state.png_buffer = None
+
+if st.button("Prepare Plot for Download"):
+    buf = io.BytesIO()
+    fig.savefig(buf, format="png")
+    buf.seek(0)
+    st.session_state.png_buffer = buf.getvalue()
+    st.success("Plot generated! Now click the download button below.")
+
+# Only show the download button if the PNG has been generated.
+if st.session_state.png_buffer is not None:
+    st.download_button(
+        label="Download plot as PNG",
+        data=st.session_state.png_buffer,
+        file_name="plot.png",
+        mime="image/png",
+    )
+
 st.pyplot(fig)
