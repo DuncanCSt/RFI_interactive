@@ -19,11 +19,6 @@ st.title("My Streamlit App")
 summary_df = load_summary_data()
 transitions_df = load_transitions_data()
 
-# Older versions of the database might not contain the ``score`` column.
-# Ensure it exists so user selections can be persisted.
-if "score" not in transitions_df.columns:
-    transitions_df["score"] = ""
-
 transition_types = transitions_df["Species"].dropna().unique()
 selected_value = st.sidebar.selectbox("Select Transition Type", transition_types)
 filtered_transitions_df = transitions_df[transitions_df["Species"] == selected_value].copy()
