@@ -3,7 +3,13 @@ import sqlite3
 import pandas as pd
 import matplotlib.pyplot as plt
 from create_db import create_database  # Import the database-creation function
-from create_summary_table import create_summary_table  
+from create_summary_table import create_summary_table
+from st_aggrid import (
+    AgGrid,
+    GridOptionsBuilder,
+    GridUpdateMode,
+    DataReturnMode,
+)
 
 create_database()
 create_summary_table()
@@ -15,11 +21,28 @@ summary_df = pd.read_sql_query("SELECT * FROM summary_table", conn)
 transitions_df = pd.read_sql_query("SELECT * FROM transitions_table", conn)
 conn.close()
 
-st.write(transitions_df.head())
-
 transition_types = transitions_df["Species"].dropna().unique()
 selected_value = st.sidebar.selectbox("Select Transition Type", transition_types)
-filtered_transitions_df = transitions_df[transitions_df["Species"] == selected_value]
+filtered_transitions_df = transitions_df[transitions_df["Species"] == selected_value].copy()
+filtered_transitions_df["score"] = ""
+
+gb = GridOptionsBuilder.from_dataframe(filtered_transitions_df)
+gb.configure_column(
+    "score",
+    editable=True,
+    cellEditor="agSelectCellEditor",
+    cellEditorParams={"values": ["fully clean", "partially clean", "not clean"]},
+)
+grid_options = gb.build()
+
+grid_response = AgGrid(
+    filtered_transitions_df,
+    gridOptions=grid_options,
+    update_mode=GridUpdateMode.VALUE_CHANGED,
+    data_return_mode=DataReturnMode.FILTERED_AND_SORTED,
+    allow_unsafe_jscode=True,
+)
+filtered_transitions_df = grid_response["data"]
 
 fig, ax = plt.subplots()
 ax.plot(summary_df['frequency'], summary_df['mean'], alpha=0.5, label='Mean')
