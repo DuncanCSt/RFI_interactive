@@ -59,3 +59,4 @@ def save_transitions_data(df: pd.DataFrame, db_path: str = DEFAULT_DB_PATH) -> N
     with sqlite3.connect(db_path) as conn:
         df.to_sql("transitions_table", conn, if_exists="replace", index=False)
 
+    load_table.clear()

@@ -2,7 +2,11 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 
-def plot_summary_with_transitions(summary_df: pd.DataFrame, transitions_df: pd.DataFrame):
+def plot_summary_with_transitions(
+        summary_df: pd.DataFrame,
+        transitions_df: pd.DataFrame,
+        x_range: tuple = (1000, 1600)
+    ) -> tuple[plt.Figure, plt.Axes]:
     """Return a matplotlib figure showing ``summary_df`` and ``transitions_df``.
 
     Vertical lines indicate the frequencies from ``transitions_df``.
@@ -18,7 +22,8 @@ def plot_summary_with_transitions(summary_df: pd.DataFrame, transitions_df: pd.D
     )
 
     ax.scatter(
-        summary_df['frequency'], summary_df['trace_1'], alpha=0.5, s=1, label='Traces'
+        summary_df['frequency'], summary_df['trace_1'], 
+        alpha=0.5, s=1, label='Traces'
     )
     for col in ['trace_' + str(i) for i in range(2, 4)]:
         ax.scatter(summary_df['frequency'], summary_df[col], alpha=0.5, s=1)
@@ -30,5 +35,5 @@ def plot_summary_with_transitions(summary_df: pd.DataFrame, transitions_df: pd.D
     ax.set_ylabel("Mean (log rescaled)")
     ax.set_title("Mean vs Frequency")
     ax.legend()
-    ax.set_xlim(1000, 1600)
+    ax.set_xlim(x_range)
     return fig, ax
