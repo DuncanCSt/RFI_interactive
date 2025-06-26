@@ -51,3 +51,11 @@ def load_transitions_data(db_path: str = DEFAULT_DB_PATH) -> pd.DataFrame:
     """Load the ``transitions_table`` from the database."""
 
     return load_table("transitions_table", db_path=db_path)
+
+
+def save_transitions_data(df: pd.DataFrame, db_path: str = DEFAULT_DB_PATH) -> None:
+    """Persist ``df`` to the ``transitions_table`` of ``db_path``."""
+
+    with sqlite3.connect(db_path) as conn:
+        df.to_sql("transitions_table", conn, if_exists="replace", index=False)
+
