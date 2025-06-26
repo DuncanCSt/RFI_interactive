@@ -20,8 +20,21 @@ summary_df = load_summary_data()
 transitions_df = load_transitions_data()
 
 transition_types = transitions_df["Species"].dropna().unique()
-selected_value = st.sidebar.selectbox("Select Transition Type", transition_types)
-filtered_transitions_df = transitions_df[transitions_df["Species"] == selected_value].copy()
+selected_value = st.sidebar.selectbox(
+    "Select Transition Type", transition_types
+)
+filtered_transitions_df = transitions_df[
+    transitions_df["Species"] == selected_value
+].copy()
+
+# Download button to save the full ``transitions_df`` as a CSV file
+csv = transitions_df.to_csv(index=False).encode("utf-8")
+st.download_button(
+    label="Download transitions_df as CSV",
+    data=csv,
+    file_name="transitions_df.csv",
+    mime="text/csv",
+)
 
 # Display editable table and get updated values
 edited_df = editable_transitions_table(filtered_transitions_df)
