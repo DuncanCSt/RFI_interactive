@@ -8,8 +8,8 @@ from st_aggrid import (
 )
 
 
-def editable_transitions_table(df: pd.DataFrame) -> pd.DataFrame:
-    """Display an editable AG Grid table for ``df`` and return the edited DataFrame."""
+def editable_transitions_table(df: pd.DataFrame) -> dict:
+    """Display an editable AG Grid table for df and return the grid response dict."""
     row_style = JsCode(
         """
 function(params) {
@@ -32,7 +32,11 @@ function(params) {
         cellEditor="agSelectCellEditor",
         cellEditorParams={"values": ["fully clean", "partially clean", "not clean"]},
     )
-    gb.configure_grid_options(getRowStyle=row_style)
+    gb.configure_grid_options(
+        getRowStyle=row_style,
+    )
+    # Enable single row selection
+    gb.configure_selection("single")
     grid_options = gb.build()
 
     grid_response = AgGrid(
@@ -42,4 +46,4 @@ function(params) {
         data_return_mode=DataReturnMode.FILTERED_AND_SORTED,
         allow_unsafe_jscode=True,
     )
-    return grid_response["data"]
+    return grid_response

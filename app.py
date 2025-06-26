@@ -36,14 +36,25 @@ st.download_button(
     mime="text/csv",
 )
 
-# Display editable table and get updated values
-edited_df = editable_transitions_table(filtered_transitions_df)
+# Display editable table and get grid response (including selected rows)
+grid_response = editable_transitions_table(filtered_transitions_df)
+edited_df = grid_response["data"]
 
-# Update ``transitions_df`` with the edited ``score`` values and persist them
+# Extract selected row (if any) and grab the frequency value
+selected_rows = grid_response.get("selected_rows")
+if selected_rows is not None and not selected_rows.empty:
+    selected_frequency = selected_rows.iloc[0]["Frequency (MHz)"]
+    # Define an x_range; for instance, +/- 5 around selected frequency:
+    x_range = (selected_frequency - 5, selected_frequency + 5)
+else:
+    # Fallback, use full range or a default value
+    x_range = (min(summary_df["frequency"]), max(summary_df["frequency"]))
+
+# Update transitions_df with the edited score values and persist them
 mask = transitions_df["Species"] == selected_value
 transitions_df.loc[mask, "score"] = edited_df["score"].values
 save_transitions_data(transitions_df)
 
-# Plot results
-fig, _ = plot_summary_with_transitions(summary_df, edited_df)
+# Plot results using the custom x_range if available
+fig, _ = plot_summary_with_transitions(summary_df, edited_df, x_range=x_range)
 st.pyplot(fig)
