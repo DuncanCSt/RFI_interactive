@@ -9,6 +9,7 @@ from st_aggrid import (
     GridOptionsBuilder,
     GridUpdateMode,
     DataReturnMode,
+    JsCode,
 )
 
 create_database()
@@ -26,6 +27,20 @@ selected_value = st.sidebar.selectbox("Select Transition Type", transition_types
 filtered_transitions_df = transitions_df[transitions_df["Species"] == selected_value].copy()
 filtered_transitions_df["score"] = ""
 
+# Your JS styling logic wrapped in JsCode:
+row_style = JsCode("""
+function(params) {
+  if (params.data.score === 'fully clean') {
+    return { background: 'lightgreen' };
+  } else if (params.data.score === 'partially clean') {
+    return { background: 'lightyellow' };
+  } else if (params.data.score === 'not clean') {
+    return { background: 'lightcoral' };
+  }
+  return {};
+}
+""")
+
 gb = GridOptionsBuilder.from_dataframe(filtered_transitions_df)
 gb.configure_column(
     "score",
@@ -33,6 +48,8 @@ gb.configure_column(
     cellEditor="agSelectCellEditor",
     cellEditorParams={"values": ["fully clean", "partially clean", "not clean"]},
 )
+# pass the JsCode object, not a raw string
+gb.configure_grid_options(getRowStyle=row_style)
 grid_options = gb.build()
 
 grid_response = AgGrid(
