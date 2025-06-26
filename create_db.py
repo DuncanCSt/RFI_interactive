@@ -2,8 +2,14 @@ import zipfile
 import sqlite3
 import pandas as pd
 import streamlit as st
+import os
 
 def create_database():
+    # Skip database creation if both tables already exist
+    db_exists = os.path.exists("rfi.db")
+    if db_exists:
+        return
+
     # Extract and read the zipped CSV
     with zipfile.ZipFile("mini_rfi_slice.csv.zip") as z:
         with z.open("mini_rfi_slice.csv") as f:
