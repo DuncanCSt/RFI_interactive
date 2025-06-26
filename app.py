@@ -1,4 +1,5 @@
 import streamlit as st
+import pandas as pd
 
 from create_db import create_database
 from create_summary_table import create_summary_table
@@ -42,6 +43,11 @@ edited_df = grid_response["data"]
 
 # Extract selected row (if any) and grab the frequency value
 selected_rows = grid_response.get("selected_rows")
+# ``selected_rows`` may be returned as a list of dictionaries.  Convert it to a
+# DataFrame so we can easily access the first selected row, if any.
+if selected_rows is not None:
+    selected_rows = pd.DataFrame(selected_rows)
+
 if selected_rows is not None and not selected_rows.empty:
     selected_frequency = selected_rows.iloc[0]["Frequency (MHz)"]
     # Define an x_range; for instance, +/- 5 around selected frequency:
