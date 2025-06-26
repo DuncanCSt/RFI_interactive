@@ -13,6 +13,11 @@ def create_database():
         with z.open("transitions_parsed.csv") as f:
             transitions = pd.read_csv(f)
 
+    # Ensure the transitions table has a ``score`` column so that the app
+    # can store user provided scores.  When the database is created the
+    # column is initialised with empty strings.
+    transitions["score"] = ""
+
     # Create the SQLite database and write the DataFrame
     conn = sqlite3.connect("rfi.db")
     rfi.to_sql("rfi_table", conn, if_exists="replace", index=True, index_label="frequency")

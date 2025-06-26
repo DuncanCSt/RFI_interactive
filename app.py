@@ -4,6 +4,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from create_db import create_database  # Import the database-creation function
 from create_summary_table import create_summary_table
+from queries import save_transitions_data
 from st_aggrid import (
     AgGrid,
     GridOptionsBuilder,
@@ -22,10 +23,14 @@ summary_df = pd.read_sql_query("SELECT * FROM summary_table", conn)
 transitions_df = pd.read_sql_query("SELECT * FROM transitions_table", conn)
 conn.close()
 
+# Older versions of the database might not contain the ``score`` column.
+# Ensure it exists so user selections can be persisted.
+if "score" not in transitions_df.columns:
+    transitions_df["score"] = ""
+
 transition_types = transitions_df["Species"].dropna().unique()
 selected_value = st.sidebar.selectbox("Select Transition Type", transition_types)
 filtered_transitions_df = transitions_df[transitions_df["Species"] == selected_value].copy()
-filtered_transitions_df["score"] = ""
 
 # Your JS styling logic wrapped in JsCode:
 row_style = JsCode("""
@@ -60,6 +65,12 @@ grid_response = AgGrid(
     allow_unsafe_jscode=True,
 )
 filtered_transitions_df = grid_response["data"]
+
+# Update ``transitions_df`` with the edited ``score`` values and persist
+# the changes back to the SQLite database.
+mask = transitions_df["Species"] == selected_value
+transitions_df.loc[mask, "score"] = filtered_transitions_df["score"].values
+save_transitions_data(transitions_df)
 
 fig, ax = plt.subplots()
 ax.plot(summary_df['frequency'], summary_df['mean'], alpha=0.5, label='Mean')
