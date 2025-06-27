@@ -32,7 +32,7 @@ def convert_frequency_to_index(f):
     f = i*(max_f-min_f)/k(600) + min_f
     """
 
-    min_f = k(20)
-    max_f = k(600)
+    min_f = 20*1e6  # 20 MHz
+    max_f = 6000*1e6  # 6 GHz
 
     return int((f*1e6 - min_f)*k(600)/(max_f-min_f))
