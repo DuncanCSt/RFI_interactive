@@ -27,7 +27,7 @@ def create_summary_table(df: pd.DataFrame = None):
 
     # Check if the MMAP_PATH exists
     if os.path.exists(MMAP_PATH):
-        rfi_data = np.memmap(MMAP_PATH, dtype='f4')
+        rfi_data = np.memmap(MMAP_PATH, dtype='f4').reshape(-1, 600000)
         t1 = 500
         t2 = 1500
         i1 = convert_frequency_to_index(F_MIN)
