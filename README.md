@@ -20,3 +20,7 @@ An interative data app powered by streamlit that analysis the RFI spectrum from
    ```bash
    streamlit run app.py
    ```
+
+
+https://github.com/user-attachments/assets/d649f8b7-bbee-445a-a11d-4fd692671c8c
+
