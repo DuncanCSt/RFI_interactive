@@ -49,10 +49,19 @@ selected_rows = grid_response.get("selected_rows")
 if selected_rows is not None:
     selected_rows = pd.DataFrame(selected_rows)
 
+    # Add a slider to select the zoom window around the selected frequency
+    zoom_options = [0.1, 1, 10, 100]
+    zoom_window = st.select_slider(
+        "Zoom window (MHz)",
+        options=zoom_options,
+        value=1,
+        help="Set the +/- MHz range around the selected frequency (log scale)"
+    )
+
 if selected_rows is not None and not selected_rows.empty:
     selected_frequency = selected_rows.iloc[0]["Frequency (MHz)"]
     # Define an x_range; for instance, +/- 5 around selected frequency:
-    x_range = (selected_frequency - 5, selected_frequency + 5)
+    x_range = (selected_frequency - zoom_window, selected_frequency + zoom_window)
 else:
     # Fallback, use full range or a default value
     x_range = (min(summary_df["frequency"]), max(summary_df["frequency"]))
