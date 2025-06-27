@@ -19,3 +19,20 @@ def kernel_regression(X_train, y_train, x_query, h, num_neighbors=10, x_min=0, x
 
     # Return the weighted sum of the nearest neighbors' responses
     return np.nansum(weights * y_neighbors)
+
+def k(x):
+    return x*1000
+
+def convert_frequency_to_index(f):
+    """ Function which converts input frequency in MHz to index,
+    Where index 600k = 6 GHz
+    index 0 = 20 MHz
+
+    Using inverse of
+    f = i*(max_f-min_f)/k(600) + min_f
+    """
+
+    min_f = k(20)
+    max_f = k(600)
+
+    return int((f*1e6 - min_f)*k(600)/(max_f-min_f))

@@ -62,6 +62,10 @@ mask = transitions_df["Species"] == selected_value
 transitions_df.loc[mask, "score"] = edited_df["score"].values
 save_transitions_data(transitions_df)
 
+# Add a button to reset x_range to None
+if st.button("Reset x_range to full range"):
+    x_range = (min(summary_df["frequency"]), max(summary_df["frequency"]))
+
 # Plot results using the custom x_range if available
 fig, _ = plot_summary_with_transitions(summary_df, edited_df, x_range=x_range)
 
