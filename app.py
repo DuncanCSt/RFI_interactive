@@ -16,7 +16,7 @@ from plots import plot_summary_with_transitions
 create_database()
 create_summary_table()
 
-st.title("My Streamlit App")
+st.title("Simple RFI visualisation App")
 
 summary_df = load_summary_data()
 transitions_df = load_transitions_data()
